@@ -5,11 +5,17 @@
 @using System.ComponentModel.DataAnnotations;
 
 <h3>TreeView基础用法</h3>
-
-<p>通过设置 <code>OnTreeItemClick</code> 属性监控树形控件节点被点击时的事件，点击树形控件节点时下面日志显示选中节点的数据</p>
-
 <p>你选中的节点是：<code>@selectItem</code></p>
-
+<p>你勾选的节点是：</p>
+@if (treeViewCheckedItems is not null)
+{
+    foreach (var item in treeViewCheckedItems)
+    {
+        <code>
+            @item.Text;
+        </code>
+    }
+}
 <Switch ValueChanged="@ToggleStateChanged" OnColor="Color.Secondary" OnText="全部收缩" OffText="全部展开"></Switch>
 
 <div>
@@ -27,7 +33,7 @@
 
 
 
-<TreeView TItem="TreeFoo" Items="@Items" ShowCheckbox="@showcheckbox" OnTreeItemClick="@OnTreeItemClick" />
+<TreeView TItem="TreeFoo" Items="@Items" ShowCheckbox="@showcheckbox" OnTreeItemChecked="@OnTreeItemChecked"  OnTreeItemClick="@OnTreeItemClick" />
 
 
 @code {
@@ -46,6 +52,11 @@
     /// TreeView选中的项
     /// </summary>
     private TreeViewItem<TreeFoo> treeViewItem;
+
+    /// <summary>
+    /// 所有勾选的TreeViewItem
+    /// </summary>
+    private List<TreeViewItem<TreeFoo>> treeViewCheckedItems;
 
     /// <summary>
     /// 是否显示选择框
@@ -123,6 +134,17 @@
                 EachTreeItem(item.Items, isexpand);
             }
         }
+    }
+
+    /// <summary>
+    /// 获取所有勾选的TreeItem
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    private async Task OnTreeItemChecked(List<TreeViewItem<TreeFoo>> items)
+    {
+        treeViewCheckedItems = items;
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
